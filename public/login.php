@@ -8,11 +8,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $query = "SELECT * FROM users WHERE username='$username'";
     $result = mysqli_query($conn, $query);
     if ($row = mysqli_fetch_assoc($result)) {
-        // Cek apakah password di database sudah hash MD5 atau plain
-        if (
-            $row['password'] === $password || // plain
-            $row['password'] === md5($password) // md5
-        ) {
+        // Cek apakah password di database sudah hash bcrypt
+        if (password_verify($password, $row['password'])) {
+            $_SESSION['user'] = $row;
+            header('Location: dashboard.php');
+            exit;
+        } elseif ($row['password'] === md5($password)) {
+            // Upgrade ke hash baru
+            $newhash = password_hash($password, PASSWORD_DEFAULT);
+            mysqli_query($conn, "UPDATE users SET password='$newhash' WHERE id=".$row['id']);
             $_SESSION['user'] = $row;
             header('Location: dashboard.php');
             exit;
@@ -29,18 +33,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <title>Login Perpustakaan</title>
     <link rel="stylesheet" href="../assets/css/style.css">
-    <style>
-    .login-box { max-width:350px; margin:60px auto; border:1px solid #ccc; padding:30px; border-radius:8px; background:#fafbfc; }
-    .login-box h2 { text-align:center; }
-    .login-box input { width:100%; margin-bottom:14px; padding:8px; border-radius:4px; border:1px solid #bbb; }
-    .login-box button { width:100%; background:#2980b9; color:#fff; border:none; padding:10px; border-radius:4px; font-size:16px; }
-    .login-box .error { color:red; text-align:center; }
-    .login-box a { display:block; text-align:center; margin-top:10px; }
-    </style>
 </head>
 <body>
-<div class="login-box">
-    <h2>Login Sistem Perpustakaan</h2>
+<div class="container">
+    <h1 style="text-align:center; color:#2980b9; margin-bottom:32px;">Login Sistem Perpustakaan</h1>
+    <div class="login-box">
     <?php if ($error) echo '<div class="error">'.$error.'</div>'; ?>
     <form method="post">
         <input type="text" name="username" placeholder="Username" required autofocus>
@@ -48,6 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button type="submit">Login</button>
     </form>
     <a href="register.php">Belum punya akun? Daftar Anggota</a>
+    </div>
 </div>
 </body>
 </html> 

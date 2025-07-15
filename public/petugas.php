@@ -8,7 +8,7 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role'] != 'admin') {
 // Proses tambah, edit, hapus
 if (isset($_POST['tambah'])) {
     $username = $_POST['username'];
-    $password = md5($_POST['password']);
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
     $nama = $_POST['nama'];
     mysqli_query($conn, "INSERT INTO users (username, password, nama, role) VALUES ('$username','$password','$nama','petugas')");
     header('Location: petugas.php');
@@ -18,7 +18,7 @@ if (isset($_POST['edit'])) {
     $id = $_POST['id'];
     $username = $_POST['username'];
     $nama = $_POST['nama'];
-    $setpass = $_POST['password'] ? ", password='".md5($_POST['password'])."'" : '';
+    $setpass = $_POST['password'] ? ", password='".password_hash($_POST['password'], PASSWORD_DEFAULT)."'" : '';
     mysqli_query($conn, "UPDATE users SET username='$username', nama='$nama' $setpass WHERE id=$id AND role='petugas'");
     header('Location: petugas.php');
     exit;

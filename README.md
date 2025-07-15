@@ -12,6 +12,8 @@ Sistem ini terdiri dari 3 peran utama: Admin, Petugas, dan Anggota. Fitur utama 
 - Katalog & pencarian buku (anggota)
 - Riwayat peminjaman anggota
 - Dashboard sesuai role
+- UI modern dan responsif (CSS custom)
+- Password terenkripsi aman (bcrypt)
 
 ## Struktur Folder
 - config/ : Konfigurasi database & SQL
@@ -24,17 +26,27 @@ Sistem ini terdiri dari 3 peran utama: Admin, Petugas, dan Anggota. Fitur utama 
 2. **Buat database** baru di MySQL, misal: `library_db`.
 3. **Import** file `config/database.sql` ke database tersebut (bisa via phpMyAdmin).
 4. **Edit** file `config/database.php` jika user/password MySQL Anda berbeda.
-5. **Insert user awal** ke tabel `users` (lihat contoh di bawah).
-6. **Akses** aplikasi via browser: `http://localhost/library/public/login.php`
+5. **Akses** aplikasi via browser: `http://localhost/library/public/login.php`
+6. **Buat user admin** dengan register, atau gunakan script reset password admin di bawah.
 
-## Skrip Insert User Awal
-Jalankan di phpMyAdmin/SQL:
+## Reset Password Admin (Darurat)
+Jika lupa password admin, gunakan script berikut:
+1. Buka `http://localhost/library/public/reset_admin.php` di browser.
+2. Klik tombol **Jalankan Reset** untuk mengatur password admin menjadi `admin123`.
+3. Setelah berhasil, **hapus file reset_admin.php** demi keamanan.
+
+## Menambah User Manual (phpMyAdmin/SQL)
+**Disarankan menambah user lewat menu register/admin.**
+Jika ingin insert manual, gunakan hash bcrypt hasil dari PHP:
+```php
+php -r "echo password_hash('password_baru', PASSWORD_DEFAULT);"
+```
+Lalu masukkan ke query berikut:
 ```sql
 INSERT INTO users (username, password, nama, role) VALUES
-('admin', MD5('admin123'), 'Administrator', 'admin'),
-('petugas', MD5('petugas123'), 'Petugas Satu', 'petugas'),
-('anggota', MD5('anggota123'), 'Anggota Satu', 'anggota');
+('admin', '$2y$10$XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', 'Administrator', 'admin');
 ```
+Ganti hash dengan hasil dari perintah PHP di atas.
 
 ## Catatan
 - Untuk menambah anggota, gunakan menu "Manajemen Anggota" (admin/petugas).
@@ -49,36 +61,17 @@ INSERT INTO users (username, password, nama, role) VALUES
 
 ---
 
-**Saran:**
+**Tips Keamanan:**
 - Ganti password user setelah login pertama.
-- Tambahkan validasi & keamanan sesuai kebutuhan produksi. 
+- Hapus file reset_admin.php setelah digunakan.
+- Tambahkan validasi & keamanan sesuai kebutuhan produksi.
 
-Penyebab utama login selalu gagal meskipun username dan password sudah benar biasanya adalah:
-1. **Password di database tidak terenkripsi MD5** (atau format hash tidak sama dengan yang dicek di login).
-2. **Data user di tabel `users` tidak ada atau salah**.
-
-### Analisis
-- Di file `login.php`, password dicek dengan `MD5('$password')`.
-- Di file `register.php` dan pada instruksi insert user awal di README, password memang sudah di-hash dengan MD5.
-- Namun, jika Anda menginput user lewat phpMyAdmin tanpa MD5, atau copy-paste password biasa (bukan hash), login pasti gagal.
-
-### Solusi
-**Pastikan data user di tabel `users` sudah benar dan password-nya di-hash MD5.**
-
-#### Contoh query insert user yang benar:
-```sql
-<code_block_to_apply_changes_from>
-```
-Jangan masukkan password dalam bentuk teks biasa!
+## Troubleshooting Login
+- Pastikan password di database sudah hash bcrypt (panjang 60 karakter, diawali `$2y$`).
+- Jika login gagal, reset password admin dengan script reset_admin.php.
+- Jika register user baru bisa login, berarti user lama perlu reset password.
+- Kolom password di tabel `users` harus VARCHAR(255).
 
 ---
 
-### Langkah Perbaikan
-1. **Cek data di tabel `users`**  
-   Pastikan password sudah dalam bentuk hash MD5 (panjang 32 karakter, misal: `e99a18c428cb38d5f260853678922e03`).
-2. **Jika perlu, hapus user lama dan insert ulang dengan query di atas.**
-3. **Coba login lagi.**
-
----
-
-Jika Anda ingin, saya bisa buatkan skrip PHP untuk menampilkan seluruh isi tabel `users` agar Anda bisa cek langsung dari browser. Apakah Anda ingin dibuatkan skrip pengecekan user, atau sudah paham langkah di atas? 
+Jika ada kendala, silakan cek error log PHP atau hubungi pengembang. 

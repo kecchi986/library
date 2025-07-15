@@ -1,7 +1,208 @@
-body { font-family: Arial, sans-serif; margin: 20px; }
-h2 { color: #2c3e50; }
-table { border-collapse: collapse; width: 100%; }
-th, td { border: 1px solid #ccc; padding: 8px; }
-th { background: #eee; }
-form { margin-top: 20px; }
-button { padding: 5px 10px; } 
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+  background: #f4f6fa;
+  color: #2c3e50;
+}
+
+.wrapper {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 240px;
+  background: linear-gradient(135deg, #2980b9 0%, #6dd5fa 100%);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  box-shadow: 2px 0 12px #0001;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 10;
+}
+.sidebar .logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding: 32px 0 24px 0;
+  text-align: center;
+  letter-spacing: 1px;
+  color: #fff;
+}
+.sidebar nav {
+  flex: 1;
+}
+.sidebar nav a {
+  display: flex;
+  align-items: center;
+  padding: 14px 32px;
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.08rem;
+  border-left: 4px solid transparent;
+  transition: background 0.2s, border 0.2s;
+  margin-bottom: 2px;
+}
+.sidebar nav a.active, .sidebar nav a:hover {
+  background: rgba(255,255,255,0.10);
+  border-left: 4px solid #fff;
+}
+.sidebar nav i {
+  margin-right: 14px;
+  font-size: 1.2em;
+}
+.sidebar .user {
+  padding: 24px 32px;
+  border-top: 1px solid rgba(255,255,255,0.12);
+  font-size: 0.98rem;
+  color: #eaf6fb;
+}
+.sidebar .logout {
+  padding: 16px 32px;
+  color: #fff;
+  text-decoration: none;
+  display: block;
+  border-top: 1px solid rgba(255,255,255,0.12);
+  font-weight: 500;
+  transition: background 0.2s;
+}
+.sidebar .logout:hover {
+  background: rgba(255,255,255,0.10);
+}
+
+.main {
+  flex: 1;
+  margin-left: 240px;
+  padding: 40px 32px 32px 32px;
+  min-height: 100vh;
+  background: #f4f6fa;
+}
+
+.dashboard-title {
+  font-size: 2.1rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.dashboard-title i {
+  font-size: 2.2rem;
+  color: #2980b9;
+}
+.dashboard-subtitle {
+  color: #6c7a89;
+  margin-bottom: 32px;
+}
+
+.card-row {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+.card {
+  flex: 1 1 220px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px #0001;
+  padding: 28px 24px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-size: 1.2rem;
+  font-weight: 500;
+  min-width: 200px;
+  min-height: 80px;
+  position: relative;
+}
+.card .icon {
+  font-size: 2.2rem;
+  border-radius: 50%;
+  padding: 12px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.card.blue { background: linear-gradient(135deg, #2980b9 0%, #6dd5fa 100%); color: #fff; }
+.card.green { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: #fff; }
+.card.yellow { background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%); color: #fff; }
+.card.purple { background: linear-gradient(135deg, #8f6ed5 0%, #d8b5ff 100%); color: #fff; }
+
+.quick-actions {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+.quick-action {
+  flex: 1 1 220px;
+  background: #f8fafc;
+  border-radius: 14px;
+  box-shadow: 0 1px 6px #0001;
+  padding: 22px 18px;
+  text-align: center;
+  font-size: 1.08rem;
+  color: #2980b9;
+  font-weight: 500;
+  min-width: 180px;
+  min-height: 60px;
+  transition: background 0.2s, color 0.2s;
+  cursor: pointer;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.quick-action i {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+.quick-action:hover {
+  background: #eaf3fb;
+  color: #206090;
+}
+
+@media (max-width: 900px) {
+  .sidebar { width: 60px; }
+  .sidebar nav a span, .sidebar .logo, .sidebar .user { display: none; }
+  .main { margin-left: 60px; padding: 24px 6vw 24px 6vw; }
+  .card-row, .quick-actions { flex-direction: column; gap: 16px; }
+}
+@media (max-width: 600px) {
+  .main { margin-left: 0; padding: 10px 2vw; }
+  .sidebar { position: static; width: 100%; min-height: unset; flex-direction: row; }
+  .sidebar nav { flex-direction: row; display: flex; }
+  .sidebar nav a { padding: 10px 10px; font-size: 1em; border-left: none; border-bottom: 2px solid transparent; }
+  .sidebar nav a.active, .sidebar nav a:hover { border-bottom: 2px solid #fff; border-left: none; }
+}
+
+/* Table, form, button, error, success, etc. tetap pakai style sebelumnya */
+body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: #f4f6fa; color: #2c3e50; }
+.container { max-width: 900px; margin: 30px auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(44,62,80,0.08); padding: 32px 24px; }
+h2 { color: #2980b9; margin-top: 0; }
+table { border-collapse: collapse; width: 100%; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 4px rgba(44,62,80,0.06); margin-bottom: 24px; }
+th, td { border: 1px solid #e1e4ea; padding: 12px 10px; text-align: left; }
+th { background: #eaf3fb; color: #2980b9; font-weight: 600; }
+tr:nth-child(even) { background: #f8fafc; }
+tr:hover { background: #f1f7fd; }
+form { margin-top: 24px; background: #f8fafc; padding: 18px 16px; border-radius: 8px; box-shadow: 0 1px 4px rgba(44,62,80,0.04); }
+input, select, textarea { width: 100%; padding: 10px; border: 1px solid #bfc9d1; border-radius: 6px; margin-bottom: 14px; font-size: 15px; background: #fff; transition: border 0.2s; }
+input:focus, select:focus, textarea:focus { border: 1.5px solid #2980b9; outline: none; }
+button { padding: 10px 22px; background: #2980b9; color: #fff; border: none; border-radius: 6px; font-size: 16px; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+button:hover { background: #206090; }
+a { color: #2980b9; text-decoration: none; transition: color 0.2s; }
+a:hover { color: #206090; text-decoration: underline; }
+.error { color: #e74c3c; background: #fdecea; border: 1px solid #f5c6cb; padding: 8px 12px; border-radius: 6px; margin-bottom: 12px; }
+.success { color: #27ae60; background: #eafaf1; border: 1px solid #b7e4c7; padding: 8px 12px; border-radius: 6px; margin-bottom: 12px; }
+@media (max-width: 600px) {
+  .container { padding: 10px 2vw; }
+  table, th, td { font-size: 14px; }
+  form { padding: 10px 2vw; }
+  h2 { font-size: 22px; }
+} 
