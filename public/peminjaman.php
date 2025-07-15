@@ -9,6 +9,9 @@ $user = $_SESSION['user'];
 $buku = mysqli_query($conn, "SELECT * FROM tb_buku");
 $anggota = mysqli_query($conn, "SELECT * FROM tb_anggota");
 $peminjaman = mysqli_query($conn, "SELECT p.*, b.judul, a.nama FROM tb_peminjaman p JOIN tb_buku b ON p.id_buku=b.id JOIN tb_anggota a ON p.id_anggota=a.id");
+// Tambahan: query buku masih dipinjam dan sudah dikembalikan
+$masih = mysqli_query($conn, "SELECT p.*, b.judul, a.nama FROM tb_peminjaman p JOIN tb_buku b ON p.id_buku=b.id JOIN tb_anggota a ON p.id_anggota=a.id WHERE p.tgl_kembali IS NULL");
+$sudah = mysqli_query($conn, "SELECT p.*, b.judul, a.nama FROM tb_peminjaman p JOIN tb_buku b ON p.id_buku=b.id JOIN tb_anggota a ON p.id_anggota=a.id WHERE p.tgl_kembali IS NOT NULL");
 ?>
 <!DOCTYPE html>
 <html>
@@ -40,10 +43,26 @@ $peminjaman = mysqli_query($conn, "SELECT p.*, b.judul, a.nama FROM tb_peminjama
     </aside>
     <main class="main">
         <div class="dashboard-title"><i class="fa fa-arrow-right-arrow-left"></i> Manajemen Peminjaman</div>
-        <h2>Data Peminjaman</h2>
+        <h2><i class="fa fa-book"></i> Buku yang Masih Dipinjam</h2>
+        <table>
+        <tr><th>No</th><th>Buku</th><th>Anggota</th><th>Tgl Pinjam</th><th>Aksi</th></tr>
+        <?php $no=1; while($row=mysqli_fetch_assoc($masih)): ?>
+        <tr>
+        <td><?= $no++ ?></td>
+        <td><?= htmlspecialchars($row['judul']) ?></td>
+        <td><?= htmlspecialchars($row['nama']) ?></td>
+        <td><?= $row['tgl_pinjam'] ?></td>
+        <td>
+        <a href="?edit=<?= $row['id'] ?>">Edit</a> |
+        <a href="?hapus=<?= $row['id'] ?>" onclick="return confirm('Hapus peminjaman?')">Hapus</a>
+        </td>
+        </tr>
+        <?php endwhile; ?>
+        </table>
+        <h2><i class="fa fa-check-circle"></i> Buku yang Sudah Dikembalikan</h2>
         <table>
         <tr><th>No</th><th>Buku</th><th>Anggota</th><th>Tgl Pinjam</th><th>Tgl Kembali</th><th>Aksi</th></tr>
-        <?php $no=1; while($row=mysqli_fetch_assoc($peminjaman)): ?>
+        <?php $no=1; while($row=mysqli_fetch_assoc($sudah)): ?>
         <tr>
         <td><?= $no++ ?></td>
         <td><?= htmlspecialchars($row['judul']) ?></td>

@@ -33,9 +33,17 @@ $user = $_SESSION['user'];
             <a href="tagihan.php"><i class="fa fa-file-invoice-dollar"></i><span>Tagihan</span></a>
             <a href="pembayaran.php"><i class="fa fa-money-bill"></i><span>Pembayaran</span></a>
         </nav>
-        <div class="user">
-            <div style="font-weight:600; margin-bottom:2px;"><i class="fa fa-user-circle"></i> <?= htmlspecialchars($user['nama']) ?></div>
-            <div style="font-size:13px; opacity:.8;">(<?= $user['role'] ?>)</div>
+        <div class="user" style="margin-top:auto;">
+            <div style="display:flex;align-items:center;gap:12px;">
+                <div style="width:44px;height:44px;border-radius:50%;background:#fff2;color:#2980b9;display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:600;">
+                    <?= strtoupper(substr($user['nama'],0,1)) ?>
+                </div>
+                <div>
+                    <div style="font-weight:600;line-height:1.2;"> <?= htmlspecialchars($user['nama']) ?> </div>
+                    <div style="font-size:13px;opacity:.8;line-height:1.2;"> <?= htmlspecialchars($user['username'] ?? '-') ?> </div>
+                    <div style="font-size:12px;opacity:.7;">(<?= $user['role'] ?>)</div>
+                </div>
+            </div>
         </div>
         <a href="logout.php" class="logout"><i class="fa fa-sign-out-alt"></i> Logout</a>
     </aside>

@@ -70,3 +70,28 @@ CREATE TABLE IF NOT EXISTS tb_pembayaran (
   status ENUM('lunas','cicil') NOT NULL,
   FOREIGN KEY (id_tagihan) REFERENCES tb_tagihan(id)
 ); 
+
+-- Data contoh anggota
+INSERT INTO tb_anggota (nama, no_ktp, no_hp, tgl_daftar) VALUES
+('Budi Santoso', '1234567890', '08123456789', '2024-01-01'),
+('Siti Aminah', '9876543210', '08234567890', '2024-02-01');
+
+-- Data contoh buku
+INSERT INTO tb_buku (judul, pengarang, tahun_terbit, harga) VALUES
+('Pemrograman PHP', 'Andi', 2022, 75000),
+('Dasar MySQL', 'Budi', 2021, 65000);
+
+-- Data contoh fasilitas
+INSERT INTO tb_fasilitas (nama, harga) VALUES
+('Ruang Diskusi', 20000),
+('Komputer', 15000);
+
+-- Data contoh peminjaman
+INSERT INTO tb_peminjaman (id_buku, id_anggota, tgl_pinjam, tgl_kembali) VALUES
+(1, 1, '2024-06-01', NULL),
+(2, 2, '2024-06-05', '2024-06-12');
+
+-- Data contoh fasilitas anggota
+INSERT INTO tb_fasilitas_anggota (id_anggota, id_fasilitas) VALUES
+(1, 1),
+(2, 2); 
