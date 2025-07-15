@@ -23,7 +23,8 @@ CREATE TABLE IF NOT EXISTS tb_buku (
   judul VARCHAR(200) NOT NULL,
   pengarang VARCHAR(100) NOT NULL,
   tahun_terbit INT NOT NULL,
-  harga DECIMAL(10,2) NOT NULL
+  harga DECIMAL(10,2) NOT NULL,
+  stok INT NOT NULL DEFAULT 0
 );
 
 -- Struktur tabel fasilitas (barang tambahan)
@@ -59,6 +60,7 @@ CREATE TABLE IF NOT EXISTS tb_tagihan (
   bulan VARCHAR(20) NOT NULL,
   id_peminjaman INT NOT NULL,
   jml_tagihan DECIMAL(10,2) NOT NULL,
+  denda DECIMAL(10,2) NOT NULL DEFAULT 0,
   FOREIGN KEY (id_peminjaman) REFERENCES tb_peminjaman(id)
 );
 
@@ -68,30 +70,54 @@ CREATE TABLE IF NOT EXISTS tb_pembayaran (
   id_tagihan INT NOT NULL,
   jml_bayar DECIMAL(10,2) NOT NULL,
   status ENUM('lunas','cicil') NOT NULL,
+  keterangan VARCHAR(50),
   FOREIGN KEY (id_tagihan) REFERENCES tb_tagihan(id)
 ); 
 
 -- Data contoh anggota
 INSERT INTO tb_anggota (nama, no_ktp, no_hp, tgl_daftar) VALUES
-('Budi Santoso', '1234567890', '08123456789', '2024-01-01'),
-('Siti Aminah', '9876543210', '08234567890', '2024-02-01');
+('Rizky Maulana', '3201010101010001', '081234567890', '2024-01-10'),
+('Intan Permata', '3201020202020002', '082134567891', '2024-02-15'),
+('Fajar Nugroho', '3201030303030003', '083134567892', '2024-03-20'),
+('Salsa Amelia', '3201040404040004', '084134567893', '2024-04-25');
 
 -- Data contoh buku
-INSERT INTO tb_buku (judul, pengarang, tahun_terbit, harga) VALUES
-('Pemrograman PHP', 'Andi', 2022, 75000),
-('Dasar MySQL', 'Budi', 2021, 65000);
+INSERT INTO tb_buku (judul, pengarang, tahun_terbit, harga, stok) VALUES
+('Belajar PHP untuk Pemula', 'Rizal Ramli', 2021, 85000, 7),
+('MySQL: Panduan Praktis', 'Siti Nurhaliza', 2020, 70000, 5),
+('Struktur Data & Algoritma', 'Bambang Pamungkas', 2019, 95000, 3),
+('Jaringan Komputer Modern', 'Dewi Sartika', 2022, 120000, 4);
 
 -- Data contoh fasilitas
 INSERT INTO tb_fasilitas (nama, harga) VALUES
-('Ruang Diskusi', 20000),
-('Komputer', 15000);
+('Ruang Baca AC', 25000),
+('Komputer Multimedia', 20000),
+('Printer Warna', 15000);
 
 -- Data contoh peminjaman
 INSERT INTO tb_peminjaman (id_buku, id_anggota, tgl_pinjam, tgl_kembali) VALUES
 (1, 1, '2024-06-01', NULL),
-(2, 2, '2024-06-05', '2024-06-12');
+(2, 2, '2024-06-05', '2024-06-12'),
+(3, 3, '2024-06-10', NULL),
+(4, 4, '2024-06-02', '2024-06-09');
 
 -- Data contoh fasilitas anggota
 INSERT INTO tb_fasilitas_anggota (id_anggota, id_fasilitas) VALUES
 (1, 1),
-(2, 2); 
+(2, 2),
+(3, 3),
+(4, 1);
+
+-- Data contoh tagihan
+INSERT INTO tb_tagihan (bulan, id_peminjaman, jml_tagihan, denda) VALUES
+('Juni 2024', 1, 85000, 0),
+('Juni 2024', 2, 70000, 0),
+('Juni 2024', 3, 95000, 0),
+('Juni 2024', 4, 120000, 0);
+
+-- Data contoh pembayaran
+INSERT INTO tb_pembayaran (id_tagihan, jml_bayar, status) VALUES
+(1, 85000, 'lunas'),
+(2, 35000, 'cicil'),
+(3, 95000, 'lunas'),
+(4, 120000, 'lunas'); 

@@ -7,6 +7,28 @@ if (!isset($_SESSION['user']) || !in_array($_SESSION['user']['role'], ['admin','
 }
 $user = $_SESSION['user'];
 $buku = mysqli_query($conn, "SELECT * FROM tb_buku");
+
+if (isset($_POST['tambah'])) {
+    $judul = $_POST['judul'];
+    $pengarang = $_POST['pengarang'];
+    $tahun_terbit = $_POST['tahun_terbit'];
+    $harga = $_POST['harga'];
+    $stok = $_POST['stok'];
+    mysqli_query($conn, "INSERT INTO tb_buku (judul, pengarang, tahun_terbit, harga, stok) VALUES ('$judul','$pengarang','$tahun_terbit','$harga','$stok')");
+    header('Location: buku.php');
+    exit;
+}
+if (isset($_POST['edit'])) {
+    $id = $_POST['id'];
+    $judul = $_POST['judul'];
+    $pengarang = $_POST['pengarang'];
+    $tahun_terbit = $_POST['tahun_terbit'];
+    $harga = $_POST['harga'];
+    $stok = $_POST['stok'];
+    mysqli_query($conn, "UPDATE tb_buku SET judul='$judul', pengarang='$pengarang', tahun_terbit='$tahun_terbit', harga='$harga', stok='$stok' WHERE id=$id");
+    header('Location: buku.php');
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -40,7 +62,7 @@ $buku = mysqli_query($conn, "SELECT * FROM tb_buku");
         <div class="dashboard-title"><i class="fa fa-book"></i> Manajemen Buku</div>
         <h2>Data Buku</h2>
         <table>
-        <tr><th>No</th><th>Judul</th><th>Pengarang</th><th>Tahun Terbit</th><th>Harga</th><th>Aksi</th></tr>
+        <tr><th>No</th><th>Judul</th><th>Pengarang</th><th>Tahun Terbit</th><th>Harga</th><th>Stok</th><th>Aksi</th></tr>
         <?php $no=1; while($row=mysqli_fetch_assoc($buku)): ?>
         <tr>
         <td><?= $no++ ?></td>
@@ -48,6 +70,7 @@ $buku = mysqli_query($conn, "SELECT * FROM tb_buku");
         <td><?= htmlspecialchars($row['pengarang']) ?></td>
         <td><?= $row['tahun_terbit'] ?></td>
         <td><?= number_format($row['harga'],0,',','.') ?></td>
+        <td><?= $row['stok'] ?></td>
         <td>
         <a href="?edit=<?= $row['id'] ?>">Edit</a> |
         <a href="?hapus=<?= $row['id'] ?>" onclick="return confirm('Hapus buku?')">Hapus</a>
@@ -69,6 +92,7 @@ $buku = mysqli_query($conn, "SELECT * FROM tb_buku");
         Pengarang: <input type="text" name="pengarang" value="<?= $edit['pengarang'] ?? '' ?>" required><br>
         Tahun Terbit: <input type="number" name="tahun_terbit" value="<?= $edit['tahun_terbit'] ?? '' ?>" required><br>
         Harga: <input type="number" name="harga" value="<?= $edit['harga'] ?? 0 ?>" required><br>
+        Stok: <input type="number" name="stok" value="<?= $edit['stok'] ?? 0 ?>" required><br>
         <button type="submit" name="<?= $edit ? 'edit' : 'tambah' ?>"><?= $edit ? 'Update' : 'Tambah' ?></button>
         </form>
     </main>

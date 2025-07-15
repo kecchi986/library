@@ -27,11 +27,52 @@ if (isset($_POST['edit'])) {
     header('Location: anggota.php');
     exit;
 }
+$alert = '';
 if (isset($_GET['hapus'])) {
     $id = $_GET['hapus'];
-    mysqli_query($conn, "DELETE FROM tb_anggota WHERE id=$id");
-    header('Location: anggota.php');
-    exit;
+    $force = isset($_GET['force']) ? true : false;
+    // Cek relasi di fasilitas_anggota dan peminjaman
+    $cek_fasilitas = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM tb_fasilitas_anggota WHERE id_anggota=$id"));
+    $cek_peminjaman = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM tb_peminjaman WHERE id_anggota=$id"));
+    if (($cek_fasilitas > 0 || $cek_peminjaman > 0) && !$force) {
+        $alert = "<div class='alert' style='background:#ffe0e0;color:#b00;padding:18px 20px;margin:18px 0;border-radius:8px;box-shadow:0 2px 8px #fbb;'>";
+        $alert .= "<div style='font-size:22px;font-weight:bold;display:flex;align-items:center;gap:10px;'><i class='fa fa-exclamation-triangle' style='color:#e67e22;'></i> PERINGATAN!</div>";
+        $alert .= "<div style='margin:10px 0 8px 0;font-size:16px;'>Anggota ini masih memiliki data terkait di sistem:</div>";
+        $alert .= "<ul style='margin:0 0 10px 20px;font-size:15px;'>";
+        if($cek_fasilitas>0) $alert .= "<li><b>$cek_fasilitas</b> fasilitas anggota</li>";
+        if($cek_peminjaman>0) $alert .= "<li><b>$cek_peminjaman</b> data peminjaman</li>";
+        $alert .= "</ul>";
+        $alert .= "<div style='margin-bottom:10px;'>Menghapus anggota ini akan <b>menghapus seluruh data terkait</b> secara permanen. Lanjutkan?</div>";
+        $alert .= "<div style='display:flex;gap:10px;'>";
+        $alert .= "<a href='?hapus=$id&force=1' style='color:#fff;background:#b00;padding:7px 18px;border-radius:4px;text-decoration:none;font-weight:bold;box-shadow:0 1px 4px #d88;'>Ya, hapus semua</a>";
+        $alert .= "<a href='anggota.php' style='color:#333;background:#eee;padding:7px 18px;border-radius:4px;text-decoration:none;font-weight:bold;border:1px solid #ccc;'>Batal</a>";
+        $alert .= "</div>";
+        $alert .= "</div>";
+    } else {
+        // Hapus data relasi jika force
+        if($force) {
+            // Hapus pembayaran dan tagihan terkait peminjaman anggota
+            $peminjaman_ids = [];
+            $res = mysqli_query($conn, "SELECT id FROM tb_peminjaman WHERE id_anggota=$id");
+            while($row = mysqli_fetch_assoc($res)) $peminjaman_ids[] = $row['id'];
+            if(count($peminjaman_ids)) {
+                $ids = implode(',', $peminjaman_ids);
+                $tagihan_ids = [];
+                $res2 = mysqli_query($conn, "SELECT id FROM tb_tagihan WHERE id_peminjaman IN ($ids)");
+                while($row2 = mysqli_fetch_assoc($res2)) $tagihan_ids[] = $row2['id'];
+                if(count($tagihan_ids)) {
+                    $ids2 = implode(',', $tagihan_ids);
+                    mysqli_query($conn, "DELETE FROM tb_pembayaran WHERE id_tagihan IN ($ids2)");
+                    mysqli_query($conn, "DELETE FROM tb_tagihan WHERE id IN ($ids2)");
+                }
+                mysqli_query($conn, "DELETE FROM tb_peminjaman WHERE id IN ($ids)");
+            }
+            mysqli_query($conn, "DELETE FROM tb_fasilitas_anggota WHERE id_anggota=$id");
+        }
+        mysqli_query($conn, "DELETE FROM tb_anggota WHERE id=$id");
+        header('Location: anggota.php');
+        exit;
+    }
 }
 $user = $_SESSION['user'];
 $anggota = mysqli_query($conn, "SELECT * FROM tb_anggota");
@@ -65,6 +106,7 @@ $anggota = mysqli_query($conn, "SELECT * FROM tb_anggota");
         <a href="logout.php" class="logout"><i class="fa fa-sign-out-alt"></i> Logout</a>
     </aside>
     <main class="main">
+        <?php if($alert) echo $alert; ?>
         <div class="dashboard-title"><i class="fa fa-users"></i> Manajemen Anggota</div>
         <h2>Data Anggota</h2>
         <table>
