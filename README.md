@@ -28,6 +28,7 @@ Sistem ini terdiri dari 3 peran utama: Admin, Petugas, dan Anggota. Fitur utama 
 4. **Edit** file `config/database.php` jika user/password MySQL Anda berbeda.
 5. **Akses** aplikasi via browser: `http://localhost/library/public/login.php`
 6. **Buat user admin** dengan register, atau gunakan script reset password admin di bawah.
+6. **Generate tagihan** terlebih dahulu di menu "Tagihan" sebelum melakukan pembayaran. Jika belum ada tagihan, pembayaran tidak dapat dilakukan.
 
 ## Reset Password Admin (Darurat)
 Jika lupa password admin, gunakan script berikut:
@@ -75,3 +76,10 @@ Ganti hash dengan hasil dari perintah PHP di atas.
 ---
 
 Jika ada kendala, silakan cek error log PHP atau hubungi pengembang. 
+
+## Alur Tagihan, Denda, dan Pembayaran
+- Denda (keterlambatan) dihitung otomatis saat generate tagihan di menu "Tagihan".
+- Denda dan total tagihan akan tersimpan di database dan digunakan pada proses pembayaran.
+- Pembayaran hanya bisa dilakukan jika tagihan sudah digenerate.
+- Jika belum ada tagihan, sistem akan menampilkan peringatan di menu pembayaran.
+- Denda yang tampil di pembayaran/tagihan adalah denda yang sudah dihitung dan disimpan saat generate tagihan, bukan denda real-time dari peminjaman. 
